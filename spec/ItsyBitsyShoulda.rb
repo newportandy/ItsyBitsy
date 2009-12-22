@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'test/unit'
 require 'shoulda'
-require 'itsybitsy'
+require File.dirname(__FILE__) + '/../lib/itsybitsy'
 require 'itsybitsymiddleware'
 
 class ItsyBitsyCouldaTest < Test::Unit::TestCase  

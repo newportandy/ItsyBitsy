@@ -1,1 +1,3 @@
 ItsyBitsy is a Sinatra knock off that I'm writing to learn Rack and Git.
+
+try it with 'rackup example/config.ru'
