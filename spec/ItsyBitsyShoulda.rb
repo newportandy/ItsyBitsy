@@ -52,12 +52,19 @@ class ItsyBitsyCouldaTest < Test::Unit::TestCase
       setup do
         app = ItsyBitsy.build do
           folder(File.join(File.dirname(__FILE__), "testposts"))
+          get '/' do
+            slugs_for(File.join(File.dirname(__FILE__), "testposts")).join(',')
+          end
         end
         @req = Rack::MockRequest.new app
       end
       should "process the files in there" do
         assert_equal("This is the body, it's a test.", @req.get('/may/test_post').body)
         assert_equal("This is the other body.", @req.get('/may/other_test_post').body)
+      end
+      
+      should "let you query the slugs for files in a folder" do
+        assert_match("/may/other_test_post,/may/test_post", @req.get('/').body)
       end
     end
     

@@ -12,6 +12,7 @@ class ItsyBitsy
   class App
     def initialize
       @simple_cache = {}
+      @slugs = {}
       @routes = { :get => {}, :post => {}, :delete => {}, :put => {} }
       @middleware = []
     end
@@ -21,21 +22,29 @@ class ItsyBitsy
     end
     
     def folder path
-      Dir.chdir path
-      Dir.glob('*').each do |file|
-        file_contents = YAML::load(File.open(file))
-        eval "get (\'#{file_contents["Slug"]}\') do \n
-          @simple_cache[\'#{file_contents["Slug"]}\'] ||= YAML::load(File.open(\"#{file}\"))[\'Body\'] \n
-          @simple_cache[\'#{file_contents["Slug"]}\'] \n
-        end"
+      slugs_for_path = []
+      Dir.chdir path do
+        Dir.glob('*').each do |file|
+          file_contents = YAML::load(File.open(file))
+          instance_eval "get (\'#{file_contents["Slug"]}\') do \n
+            @simple_cache[\'#{file_contents["Slug"]}\'] ||= YAML::load(File.open(\"#{File.join(Dir.pwd, file)}\"))[\'Body\'] \n
+            @simple_cache[\'#{file_contents["Slug"]}\'] \n
+          end"
+          slugs_for_path << file_contents["Slug"]
+        end
+        @slugs[path] = slugs_for_path
       end
+    end
+    
+    def slugs_for path
+      @slugs[path]
     end
     
     def add_route method, matcher, &block
       if matcher.is_a? String
         path_params = matcher.scan(/:(\w+)/).flatten
         matcher = Regexp.new(matcher.gsub(/:(\w+)/, '(\w+)')+'$')
-        eval "def matcher.path_params\n#{path_params.inspect}\nend" if path_params.length > 0
+        instance_eval "def matcher.path_params\n#{path_params.inspect}\nend" if path_params.length > 0
       end
       @routes[method][matcher] = block
     end
