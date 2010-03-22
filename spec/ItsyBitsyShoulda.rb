@@ -2,7 +2,7 @@ require 'rubygems'
 require 'test/unit'
 require 'shoulda'
 require File.dirname(__FILE__) + '/../lib/itsybitsy'
-require 'itsybitsymiddleware'
+require File.dirname(__FILE__) + '/itsybitsymiddleware'
 
 class ItsyBitsyCouldaTest < Test::Unit::TestCase  
   context "An ItsyBitsy instance" do
@@ -51,12 +51,13 @@ class ItsyBitsyCouldaTest < Test::Unit::TestCase
     context "that defines a content folder" do
       setup do
         app = ItsyBitsy.build do
-          folder("testposts")
+          folder(File.join(File.dirname(__FILE__), "testposts"))
         end
         @req = Rack::MockRequest.new app
       end
       should "process the files in there" do
         assert_equal("This is the body, it's a test.", @req.get('/may/test_post').body)
+        assert_equal("This is the other body.", @req.get('/may/other_test_post').body)
       end
     end
     

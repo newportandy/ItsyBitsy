@@ -11,6 +11,7 @@ class ItsyBitsy
   
   class App
     def initialize
+      @simple_cache = {}
       @routes = { :get => {}, :post => {}, :delete => {}, :put => {} }
       @middleware = []
     end
@@ -23,7 +24,10 @@ class ItsyBitsy
       Dir.chdir path
       Dir.glob('*').each do |file|
         file_contents = YAML::load(File.open(file))
-        eval "get (\"#{file_contents["Slug"]}\") { \"#{file_contents["Body"]}\" }"
+        eval "get (\'#{file_contents["Slug"]}\') do \n
+          @simple_cache[\'#{file_contents["Slug"]}\'] ||= YAML::load(File.open(\"#{file}\"))[\'Body\'] \n
+          @simple_cache[\'#{file_contents["Slug"]}\'] \n
+        end"
       end
     end
     
