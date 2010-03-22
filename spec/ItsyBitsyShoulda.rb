@@ -48,6 +48,18 @@ class ItsyBitsyCouldaTest < Test::Unit::TestCase
       assert_equal( "5", @req.get( '/route_params/5' ).body )
     end
     
+    context "that defines a content folder" do
+      setup do
+        app = ItsyBitsy.build do
+          folder("testposts")
+        end
+        @req = Rack::MockRequest.new app
+      end
+      should "process the files in there" do
+        assert_equal("This is the body, it's a test.", @req.get('/may/test_post').body)
+      end
+    end
+    
     context "with two applications" do
       should "have seperate helpers for each" do
         app1 = ItsyBitsy.build do

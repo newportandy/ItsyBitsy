@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rack'
+require 'yaml'
 
 class ItsyBitsy
   def self.build &block
@@ -16,6 +17,14 @@ class ItsyBitsy
     
     def method_missing method, *args, &block
       [:get, :put, :delete, :post].include?(method) ? add_route( method, args[0], &block) : super
+    end
+    
+    def folder path
+      Dir.chdir path
+      Dir.glob('*').each do |file|
+        file_contents = YAML::load(File.open(file))
+        eval "get (\"#{file_contents["Slug"]}\") { \"#{file_contents["Body"]}\" }"
+      end
     end
     
     def add_route method, matcher, &block
