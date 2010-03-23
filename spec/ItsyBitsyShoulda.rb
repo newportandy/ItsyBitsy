@@ -37,6 +37,10 @@ class ItsyBitsyShouldaTest < Test::Unit::TestCase
       assert_equal( "regex", @req.get( '/regex' ).body )
     end
     
+    should "match string based routes exactly" do
+      assert_equal( 404, @req.get( '/trash/params' ).status )
+    end
+    
     should "responde with 404 when it can't find a route" do
       assert_equal( 404, @req.get( '/unknown' ).status )
     end

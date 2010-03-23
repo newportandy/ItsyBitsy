@@ -68,7 +68,7 @@ module ItsyBitsy
     def add_route method, matcher, &block
       if matcher.is_a? String
         path_params = matcher.scan(/:(\w+)/).flatten
-        matcher = Regexp.new(matcher.gsub(/:(\w+)/, '(\w+)')+'$')
+        matcher = Regexp.new('^' + matcher.gsub(/:(\w+)/, '(\w+)') + '$')
         instance_eval "def matcher.path_params\n#{path_params.inspect}\nend" if path_params.length > 0
       end
       @routes[method][matcher] = block
