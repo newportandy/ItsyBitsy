@@ -26,7 +26,7 @@ module ItsyBitsy
       Dir.chdir path do
         Dir.glob('*').each do |file|
           file_contents = YAML::load(File.open(file))
-          instance_eval "get (\'#{file_contents["Slug"]}\') do \n
+          instance_eval "get ('#{file_contents["Slug"]}') do
             @simple_cache[\'#{file_contents["Slug"]}\'] ||= YAML::load(File.open(\"#{File.join(Dir.pwd, file)}\"))[\'Body\'] \n
             @simple_cache[\'#{file_contents["Slug"]}\'] \n
           end"
