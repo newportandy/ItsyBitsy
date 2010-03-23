@@ -27,8 +27,8 @@ module ItsyBitsy
         Dir.glob('*').each do |file|
           file_contents = YAML::load(File.open(file))
           instance_eval "get ('#{file_contents["Slug"]}') do
-            @simple_cache[\'#{file_contents["Slug"]}\'] ||= YAML::load(File.open(\"#{File.join(Dir.pwd, file)}\"))[\'Body\'] \n
-            @simple_cache[\'#{file_contents["Slug"]}\'] \n
+            @simple_cache['#{file_contents["Slug"]}'] ||= YAML::load(File.open('#{File.join(Dir.pwd, file)}'))['Body']
+            @simple_cache['#{file_contents["Slug"]}']
           end"
           slugs_for_path << file_contents["Slug"]
         end
@@ -38,22 +38,6 @@ module ItsyBitsy
     
     def slugs_for path
       @slugs[path]
-    end
-    
-    def assets path, slug_base
-      Dir.chdir path do
-        Dir.glob('*').each do |file|
-          file_path = File.join(path, file)
-          type = Rack::Mime.mime_type(File.extname(file), nil)
-          slug = File.join(slug_base, file)
-          instance_eval "get (\'#{slug}\') do \n
-            @response.headers[\"Itsy-Static\"] = 'true'
-            @response.headers[\"Content-type\"] = \"#{type}\" if \"#{type}\".length > 0
-            @simple_cache[\'#{slug}\'] ||= File.read(\"#{file_path}\") \n
-            @simple_cache[\'#{slug}\'] \n
-          end"
-        end
-      end
     end
     
     def header content
