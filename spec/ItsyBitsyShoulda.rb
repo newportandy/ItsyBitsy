@@ -72,6 +72,7 @@ class ItsyBitsyShouldaTest < Test::Unit::TestCase
     context "that defines an assets folder" do
       setup do
         app = ItsyBitsy.build do
+          header("header")
           assets(File.join(File.dirname(__FILE__), "assets"), "/public")
         end
         @req = Rack::MockRequest.new app

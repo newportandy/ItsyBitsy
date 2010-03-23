@@ -48,6 +48,7 @@ module ItsyBitsy
           type = Rack::Mime.mime_type(File.extname(file), nil)
           slug = File.join(slug_base, file)
           instance_eval "get (\'#{slug}\') do \n
+            @response.headers[\"Itsy-Static\"] = 'true'
             @response.headers[\"Content-type\"] = \"#{type}\" if \"#{type}\".length > 0
             @simple_cache[\'#{slug}\'] ||= File.read(\"#{file_path}\") \n
             @simple_cache[\'#{slug}\'] \n
@@ -134,7 +135,7 @@ module ItsyBitsy
     include ItsyBitsy::Middleware
     attr_accessor :header, :footer
     def transform
-      @body = @header + @body + @footer
+      @body = (@header + @body + @footer) unless @headers['Itsy-Static']
     end
   end
 end
