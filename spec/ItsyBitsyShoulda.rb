@@ -5,7 +5,7 @@ require File.dirname(__FILE__) + '/../lib/itsybitsy'
 require File.dirname(__FILE__) + '/../lib/middleware'
 require File.dirname(__FILE__) + '/itsybitsymiddleware'
 
-class ItsyBitsyCouldaTest < Test::Unit::TestCase  
+class ItsyBitsyShouldaTest < Test::Unit::TestCase  
   context "An ItsyBitsy instance" do
     setup do
       app = ItsyBitsy.build do
@@ -66,6 +66,24 @@ class ItsyBitsyCouldaTest < Test::Unit::TestCase
       
       should "let you query the slugs for files in a folder" do
         assert_match("/may/other_test_post,/may/test_post", @req.get('/').body)
+      end
+    end
+    
+    context "that defines an assets folder" do
+      setup do
+        app = ItsyBitsy.build do
+          assets(File.join(File.dirname(__FILE__), "assets"), "/public")
+        end
+        @req = Rack::MockRequest.new app
+      end
+      should "send the file in response" do
+        assert_equal("h1 { color: white; background-color: black; }", @req.get('/public/test.css').body)
+      end
+      should "set the correct headers for css" do
+        assert_equal("text/css", @req.get('/public/test.css').headers["Content-type"])
+      end
+      should "set the correct headers for images" do
+        assert_equal("image/png", @req.get('/public/image.png').headers["Content-type"])
       end
     end
     

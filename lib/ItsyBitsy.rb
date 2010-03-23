@@ -41,6 +41,21 @@ module ItsyBitsy
       @slugs[path]
     end
     
+    def assets path, slug_base
+      Dir.chdir path do
+        Dir.glob('*').each do |file|
+          file_path = File.join(path, file)
+          type = Rack::Mime.mime_type(File.extname(file), nil)
+          slug = File.join(slug_base, file)
+          instance_eval "get (\'#{slug}\') do \n
+            @response.headers[\"Content-type\"] = \"#{type}\" if \"#{type}\".length > 0
+            @simple_cache[\'#{slug}\'] ||= File.read(\"#{file_path}\") \n
+            @simple_cache[\'#{slug}\'] \n
+          end"
+        end
+      end
+    end
+    
     def header content
       @header = content
     end
