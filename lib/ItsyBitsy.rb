@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rack'
 require 'yaml'
+require File.dirname(__FILE__) + '/middleware'
 
 module ItsyBitsy
   def self.build &block
@@ -38,6 +39,14 @@ module ItsyBitsy
     
     def slugs_for path
       @slugs[path]
+    end
+    
+    def header content
+      @header = content
+    end
+
+    def footer content
+      @footer = content
     end
     
     def add_route method, matcher, &block
@@ -84,6 +93,9 @@ module ItsyBitsy
       @middleware.each do |middleware|
           app = middleware.new app
       end
+      app = TopNTail.new app
+      app.header = @header || ""
+      app.footer = @footer || ""
       app.call env
     end
     
@@ -99,6 +111,15 @@ module ItsyBitsy
         return block
       end
       nil
+    end
+  end
+  
+  #Middleware to add a header/footer to the response.
+  class TopNTail 
+    include ItsyBitsy::Middleware
+    attr_accessor :header, :footer
+    def transform
+      @body = @header + @body + @footer
     end
   end
 end

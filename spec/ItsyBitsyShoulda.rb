@@ -99,6 +99,23 @@ class ItsyBitsyCouldaTest < Test::Unit::TestCase
         @req = Rack::MockRequest.new app
         assert_equal( "12get21", @req.get( '/' ).body )
       end
+    end
+    
+    context "that uses header and footer" do
+      setup do
+         app = ItsyBitsy.build do
+          header( "This is the header.\n" )
+          footer( "This is the footer." )
+          get '/' do
+            "This is the Body. \n"
+          end
+        end
+        @req = Rack::MockRequest.new app
+      end
+      should "allow for header and footer content" do
+        assert_match( "This is the header.", @req.get( '/' ).body )
+        assert_match( "This is the footer.", @req.get( '/' ).body )
+      end
     end 
   end
 end
