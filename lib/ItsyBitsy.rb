@@ -15,7 +15,6 @@ module ItsyBitsy
       @simple_cache = {}
       @slugs = {}
       @routes = { :get => {}, :post => {}, :delete => {}, :put => {} }
-      @middleware = []
     end
     
     def method_missing method, *args, &block
@@ -78,10 +77,6 @@ module ItsyBitsy
       instance_eval &block 
     end
     
-    def use middlware
-      @middleware.unshift middlware
-    end
-    
     def redirect path
       @response.redirect path
     end
@@ -106,9 +101,6 @@ module ItsyBitsy
           @response.finish
         end
       }
-      @middleware.each do |middleware|
-          app = middleware.new app
-      end
       app = TopNTail.new app
       app.header = @header || ""
       app.footer = @footer || ""

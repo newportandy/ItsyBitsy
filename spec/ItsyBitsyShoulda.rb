@@ -111,19 +111,7 @@ class ItsyBitsyShouldaTest < Test::Unit::TestCase
         assert_raise NameError do  @req2.get( '/' ) end
       end
     end
-    
-    context "that uses middleware" do
-      should "use it in the correct order" do
-        app = ItsyBitsy.build do
-          use Middleware1
-          use Middleware2
-          get( '/' ) { "get" }
-        end
-        @req = Rack::MockRequest.new app
-        assert_equal( "12get21", @req.get( '/' ).body )
-      end
-    end
-    
+      
     context "that uses header and footer" do
       setup do
          app = ItsyBitsy.build do
