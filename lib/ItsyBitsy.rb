@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rack'
 require 'yaml'
 
-class ItsyBitsy
+module ItsyBitsy
   def self.build &block
     app = App.new
     app.instance_eval &block
